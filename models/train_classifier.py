@@ -15,6 +15,7 @@ from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.metrics import classification_report
 import pickle
 import bz2
+import joblib
 
 def load_data(database_filepath):
     engine = create_engine('sqlite:///{}'.format(database_filepath))
@@ -50,11 +51,15 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 def save_model(model, model_filepath):
     try:
-        with bz2.BZ2File(model_filepath.split(".")[0]+".pbz2",'w') as f:
-            pickle.dump(model, f)
+        joblib.dump(model, model_filepath.split(".")[0]+'.gz', compress=('gzip', 3))
     except:
-        print("Error attempting to write to bz2 file")
-        pickle.dump(model, open(model_filepath, 'w'))
+        print('Error using joblib')
+    # try:
+    #     with bz2.BZ2File(model_filepath.split(".")[0]+".pbz2",'w') as f:
+    #         pickle.dump(model, f)
+    # except:
+    #     print("Error attempting to write to bz2 file")
+    #     pickle.dump(model, open(model_filepath, 'w'))
 
 
 def main():
